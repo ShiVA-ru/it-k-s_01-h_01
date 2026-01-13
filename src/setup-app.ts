@@ -4,7 +4,7 @@ import { testingRouter } from "./testing/testing.router";
 
 export const RouterPath = {
   videos: "/videos",
-  __tests__: "/__tests__",
+  testing: "/testing",
 };
 
 export const setupApp = (app: Express) => {
@@ -16,7 +16,7 @@ export const setupApp = (app: Express) => {
   });
 
   app.use(RouterPath.videos, videosRouter);
-  app.use(RouterPath.__tests__, testingRouter);
+  app.use(RouterPath.testing, testingRouter);
 
   return app;
 };

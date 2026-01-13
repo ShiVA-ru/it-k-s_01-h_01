@@ -6,10 +6,11 @@ import { VideoViewModel } from "./models/VideoViewModel";
 import {
   RequestWithBody,
   RequestWithParams,
+  RequestWithParamsAndBody,
 } from "../core/types/request-types";
 import { URIParamsVideoIdModel } from "./models/URIParamsVideoModel";
 import { CreateViewModel } from "./models/CreateVideoModel";
-import { VideoResolutions } from "../core/types/VideoResolutionsEnum";
+import { UpdateVideoModel } from "./models/UpdateVideoModel";
 // import { ValidationError } from "../../drivers/types/validation-error";
 
 export const videosRouter = Router();
@@ -25,26 +26,7 @@ const mapEntityToViewModel = (dbEntity: VideoType): VideoViewModel => ({
   availableResolutions: dbEntity.availableResolutions,
 });
 
-videosRouter.get("/", (req, res: Response<VideoViewModel[]>) => {
-  res.status(HttpStatus.Ok).json(db.videos.map(mapEntityToViewModel));
-});
-
-videosRouter.get(
-  "/:id",
-  (
-    req: RequestWithParams<URIParamsVideoIdModel>,
-    res: Response<VideoViewModel>,
-  ) => {
-    const findEntity = db.videos.find((video) => video.id === +req.params.id);
-
-    if (!findEntity) {
-      res.sendStatus(HttpStatus.NotFound);
-      return;
-    }
-    return res.status(HttpStatus.Ok).json(mapEntityToViewModel(findEntity));
-  },
-);
-
+//CREATE
 videosRouter.post(
   "/",
   (req: RequestWithBody<CreateViewModel>, res: Response<VideoViewModel>) => {
@@ -69,6 +51,52 @@ videosRouter.post(
   },
 );
 
+// READ
+videosRouter.get("/", (req, res: Response<VideoViewModel[]>) => {
+  res.status(HttpStatus.Ok).json(db.videos.map(mapEntityToViewModel));
+});
+
+videosRouter.get(
+  "/:id",
+  (
+    req: RequestWithParams<URIParamsVideoIdModel>,
+    res: Response<VideoViewModel>,
+  ) => {
+    const findEntity = db.videos.find((video) => video.id === +req.params.id);
+
+    if (!findEntity) {
+      res.sendStatus(HttpStatus.NotFound);
+      return;
+    }
+    return res.status(HttpStatus.Ok).json(mapEntityToViewModel(findEntity));
+  },
+);
+
+//UPDATE
+videosRouter.put(
+  "/:id",
+  (
+    req: RequestWithParamsAndBody<URIParamsVideoIdModel, UpdateVideoModel>,
+    res: Response<VideoViewModel>,
+  ) => {
+    const updateData: UpdateVideoModel = req.body;
+
+    let foundEntity: VideoType | undefined = db.videos.find(
+      (video) => video.id === parseInt(req.params.id),
+    );
+
+    if (!foundEntity) {
+      res.sendStatus(HttpStatus.NotFound);
+      return;
+    }
+
+    foundEntity = { ...foundEntity, ...updateData };
+
+    res.status(HttpStatus.Ok).json(mapEntityToViewModel(foundEntity));
+  },
+);
+
+//DELETE
 videosRouter.delete(
   "/:id",
   (req: RequestWithParams<URIParamsVideoIdModel>, res: Response) => {

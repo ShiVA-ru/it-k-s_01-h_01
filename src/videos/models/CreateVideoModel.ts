@@ -1,4 +1,4 @@
-import { VideoResolutions } from "../../core/types/VideoResolutionsEnum";
+import { VideoResolutions } from "../../core/types/video-resolutions";
 
 export type CreateViewModel = {
   title: string;
