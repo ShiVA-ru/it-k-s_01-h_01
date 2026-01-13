@@ -5,6 +5,6 @@ export type UpdateVideoModel = {
   author: string;
   canBeDownloaded: boolean;
   minAgeRestriction: number;
-  publicationDate: Date;
+  publicationDate: string;
   availableResolutions: VideoResolutions[];
 };

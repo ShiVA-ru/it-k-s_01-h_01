@@ -6,8 +6,8 @@ export type VideoType = {
   author: string;
   canBeDownloaded: boolean;
   minAgeRestriction: number | null;
-  createdAt: Date;
-  publicationDate: Date;
+  createdAt: string;
+  publicationDate: string;
   availableResolutions: VideoResolutions[];
 };
 
@@ -23,8 +23,8 @@ export const db: DBType = {
       author: "string",
       canBeDownloaded: true,
       minAgeRestriction: null,
-      createdAt: new Date("2026-01-12T15:29:20.510Z"),
-      publicationDate: new Date("2026-01-12T15:29:20.510Z"),
+      createdAt: new Date("2026-01-12T15:29:20.510Z").toISOString(),
+      publicationDate: new Date("2026-01-12T15:29:20.510Z").toISOString(),
       availableResolutions: [VideoResolutions.P144],
     },
     {
@@ -33,8 +33,8 @@ export const db: DBType = {
       author: "string",
       canBeDownloaded: true,
       minAgeRestriction: null,
-      createdAt: new Date("2026-01-12T15:29:20.510Z"),
-      publicationDate: new Date("2026-01-12T15:29:20.510Z"),
+      createdAt: new Date("2026-01-12T15:29:20.510Z").toISOString(),
+      publicationDate: new Date("2026-01-12T15:29:20.510Z").toISOString(),
       availableResolutions: [VideoResolutions.P144],
     },
     {
@@ -43,8 +43,8 @@ export const db: DBType = {
       author: "string",
       canBeDownloaded: true,
       minAgeRestriction: null,
-      createdAt: new Date("2026-01-12T15:29:20.510Z"),
-      publicationDate: new Date("2026-01-12T15:29:20.510Z"),
+      createdAt: new Date("2026-01-12T15:29:20.510Z").toISOString(),
+      publicationDate: new Date("2026-01-12T15:29:20.510Z").toISOString(),
       availableResolutions: [VideoResolutions.P144],
     },
   ],
