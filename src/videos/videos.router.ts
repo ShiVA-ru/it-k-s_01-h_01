@@ -13,7 +13,8 @@ import { CreateVideoModel } from "./models/CreateVideoModel";
 import { UpdateVideoModel } from "./models/UpdateVideoModel";
 import { updateVideoValidate } from "./validation/update-video.validator";
 import { createVideoValidate } from "./validation/create-video.validator";
-// import { ValidationError } from "../../drivers/types/validation-error";
+import { createErrorMessages } from "../core/utils/error.utils";
+import { ValidationError } from "../core/types/validation-error";
 
 export const videosRouter = Router();
 
@@ -31,7 +32,10 @@ const mapEntityToViewModel = (dbEntity: VideoType): VideoViewModel => ({
 //CREATE
 videosRouter.post(
   "/",
-  (req: RequestWithBody<CreateVideoModel>, res: Response<VideoViewModel>) => {
+  (
+    req: RequestWithBody<CreateVideoModel>,
+    res: Response<VideoViewModel | { errorMessages: ValidationError[] }>,
+  ) => {
     const errors = createVideoValidate(req.body);
 
     if (errors.length > 0) {
@@ -82,7 +86,7 @@ videosRouter.put(
   "/:id",
   (
     req: RequestWithParamsAndBody<URIParamsVideoIdModel, UpdateVideoModel>,
-    res: Response<VideoViewModel>,
+    res: Response<VideoViewModel | { errorMessages: ValidationError[] }>,
   ) => {
     const id = parseInt(String(req.params.id));
     const index = db.videos.findIndex((video) => video.id === id);
@@ -121,13 +125,19 @@ videosRouter.delete(
   "/:id",
   (req: RequestWithParams<URIParamsVideoIdModel>, res: Response) => {
     const id = parseInt(String(req.params.id));
-    db.videos = db.videos.filter((video) => video.id !== id);
+    const index = db.videos.findIndex((v) => v.id === id);
+
+    if (index === -1) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: "id", message: "Video not found" }]),
+        );
+      return;
+    }
+
+    db.videos.splice(index, 1);
 
     return res.sendStatus(HttpStatus.NoContent);
   },
 );
-function createErrorMessages(
-  arg0: { field: string; message: string }[],
-): VideoViewModel | undefined {
-  throw new Error("Function not implemented.");
-}
