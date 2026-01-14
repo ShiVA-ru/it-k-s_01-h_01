@@ -1,4 +1,4 @@
-import { VideoResolutions } from "../core/types/video-resolutions";
+import { VideoResolutions } from "../videos/models/video-resolutions";
 
 export type VideoType = {
   id: number;

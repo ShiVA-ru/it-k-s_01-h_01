@@ -1,6 +1,6 @@
-import { VideoResolutions } from "../../core/types/video-resolutions";
+import { VideoResolutions } from "./video-resolutions";
 
-export type CreateViewModel = {
+export type CreateVideoModel = {
   title: string;
   author: string;
   availableResolutions: VideoResolutions[];

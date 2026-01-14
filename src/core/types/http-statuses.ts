@@ -10,3 +10,7 @@ export enum HttpStatus {
 
   InternalServerError = 500,
 }
+
+type HttpStatusKeys = keyof typeof HttpStatus;
+
+export type HttpStatusType = (typeof HttpStatus)[HttpStatusKeys];

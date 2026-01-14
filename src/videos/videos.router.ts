@@ -9,8 +9,10 @@ import {
   RequestWithParamsAndBody,
 } from "../core/types/request-types";
 import { URIParamsVideoIdModel } from "./models/URIParamsVideoModel";
-import { CreateViewModel } from "./models/CreateVideoModel";
+import { CreateVideoModel } from "./models/CreateVideoModel";
 import { UpdateVideoModel } from "./models/UpdateVideoModel";
+import { updateVideoValidate } from "./validation/update-video.validator";
+import { createVideoValidate } from "./validation/create-video.validator";
 // import { ValidationError } from "../../drivers/types/validation-error";
 
 export const videosRouter = Router();
@@ -29,18 +31,20 @@ const mapEntityToViewModel = (dbEntity: VideoType): VideoViewModel => ({
 //CREATE
 videosRouter.post(
   "/",
-  (req: RequestWithBody<CreateViewModel>, res: Response<VideoViewModel>) => {
-    const title = req.body.title;
-    if (!title) {
-      res.sendStatus(HttpStatus.BadRequest);
+  (req: RequestWithBody<CreateVideoModel>, res: Response<VideoViewModel>) => {
+    const errors = createVideoValidate(req.body);
+
+    if (errors.length > 0) {
+      res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
       return;
     }
+
     const createdEntity: VideoViewModel = {
       id: +new Date(),
       title: req.body.title,
       author: req.body.author,
       canBeDownloaded: true,
-      minAgeRestriction: 18,
+      minAgeRestriction: null,
       createdAt: new Date().toISOString(),
       publicationDate: new Date().toISOString(),
       availableResolutions: req.body.availableResolutions,
@@ -62,7 +66,8 @@ videosRouter.get(
     req: RequestWithParams<URIParamsVideoIdModel>,
     res: Response<VideoViewModel>,
   ) => {
-    const findEntity = db.videos.find((video) => video.id === +req.params.id);
+    const id = parseInt(String(req.params.id));
+    const findEntity = db.videos.find((video) => video.id === id);
 
     if (!findEntity) {
       res.sendStatus(HttpStatus.NotFound);
@@ -79,20 +84,35 @@ videosRouter.put(
     req: RequestWithParamsAndBody<URIParamsVideoIdModel, UpdateVideoModel>,
     res: Response<VideoViewModel>,
   ) => {
-    const updateData: UpdateVideoModel = req.body;
+    const id = parseInt(String(req.params.id));
+    const index = db.videos.findIndex((video) => video.id === id);
 
-    let foundEntity: VideoType | undefined = db.videos.find(
-      (video) => video.id === parseInt(req.params.id),
-    );
-
-    if (!foundEntity) {
-      res.sendStatus(HttpStatus.NotFound);
+    if (index === -1) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: "id", message: "Video not found" }]),
+        );
       return;
     }
 
-    foundEntity = { ...foundEntity, ...updateData };
+    const errors = updateVideoValidate(req.body);
 
-    res.status(HttpStatus.Ok).json(mapEntityToViewModel(foundEntity));
+    if (errors.length > 0) {
+      res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
+      return;
+    }
+
+    const video = db.videos[index];
+    const updatedVideo = {
+      ...video,
+      ...req.body,
+      id: video.id,
+    };
+
+    db.videos[index] = updatedVideo;
+
+    res.sendStatus(HttpStatus.NoContent);
   },
 );
 
@@ -100,8 +120,14 @@ videosRouter.put(
 videosRouter.delete(
   "/:id",
   (req: RequestWithParams<URIParamsVideoIdModel>, res: Response) => {
-    db.videos = db.videos.filter((video) => video.id !== +req.params.id);
+    const id = parseInt(String(req.params.id));
+    db.videos = db.videos.filter((video) => video.id !== id);
 
     return res.sendStatus(HttpStatus.NoContent);
   },
 );
+function createErrorMessages(
+  arg0: { field: string; message: string }[],
+): VideoViewModel | undefined {
+  throw new Error("Function not implemented.");
+}
