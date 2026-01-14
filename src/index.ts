@@ -8,7 +8,11 @@ setupApp(app);
 // порт приложения
 const PORT = process.env.PORT || 5001;
 
-// запуск приложения
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel serverless functions
+export default app;
