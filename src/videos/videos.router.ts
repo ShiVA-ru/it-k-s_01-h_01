@@ -43,14 +43,18 @@ videosRouter.post(
       return;
     }
 
+    const DAY_IN_MS = 24 * 60 * 60 * 1000;
+    const createdAt = new Date();
+    const publicationDate = new Date(createdAt.getTime() + DAY_IN_MS);
+
     const createdEntity: VideoViewModel = {
       id: +new Date(),
       title: req.body.title,
       author: req.body.author,
-      canBeDownloaded: true,
+      canBeDownloaded: false,
       minAgeRestriction: null,
-      createdAt: new Date().toISOString(),
-      publicationDate: new Date().toISOString(),
+      createdAt: createdAt.toISOString(),
+      publicationDate: publicationDate.toISOString(),
       availableResolutions: req.body.availableResolutions,
     };
     db.videos.push(createdEntity);

@@ -2,7 +2,8 @@ import { ValidationError } from "../../core/types/validation-error";
 import { UpdateVideoModel } from "../models/UpdateVideoModel";
 import { VideoResolutions } from "../models/video-resolutions";
 
-const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+const ISO_DATE_REGEX =
+  /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/;
 
 export const updateVideoValidate = (
   data: UpdateVideoModel,
