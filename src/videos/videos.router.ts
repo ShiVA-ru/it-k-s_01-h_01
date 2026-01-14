@@ -34,7 +34,7 @@ videosRouter.post(
   "/",
   (
     req: RequestWithBody<CreateVideoModel>,
-    res: Response<VideoViewModel | { errorMessages: ValidationError[] }>,
+    res: Response<VideoViewModel | { errorsMessages: ValidationError[] }>,
   ) => {
     const errors = createVideoValidate(req.body);
 
@@ -90,7 +90,7 @@ videosRouter.put(
   "/:id",
   (
     req: RequestWithParamsAndBody<URIParamsVideoIdModel, UpdateVideoModel>,
-    res: Response<VideoViewModel | { errorMessages: ValidationError[] }>,
+    res: Response<VideoViewModel | { errorsMessages: ValidationError[] }>,
   ) => {
     const id = parseInt(String(req.params.id));
     const index = db.videos.findIndex((video) => video.id === id);
